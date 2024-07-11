@@ -20,6 +20,7 @@ import {
   IconTag,
   IconUser,
 } from "@tabler/icons-react";
+import "@mantine/dates/styles.css";
 
 const NewTask = () => {
   const [opened, { open, close }] = useDisclosure(false);
@@ -48,7 +49,13 @@ const NewTask = () => {
           <Flex align="center" gap="md">
             <IconCalendar stroke={1.5} />
             <Text style={{ width: "3rem" }}>Date</Text>
-            <DateInput value={date} onChange={setDate} flex={1} />
+            <DateInput
+              value={date}
+              onChange={setDate}
+              flex={1}
+              clearable
+              defaultValue={new Date()}
+            />
           </Flex>
           <Flex align="center" gap="md">
             <IconClock stroke={1.5} />
