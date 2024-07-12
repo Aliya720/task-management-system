@@ -17,6 +17,7 @@ import {
   IconSettings,
 } from "@tabler/icons-react";
 import NewTask from "../NewTask/NewTask";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const [opened, { toggle }] = useDisclosure();
@@ -43,7 +44,14 @@ const Navbar = () => {
             />
             <Group ml="xl" gap={20}>
               <NewTask />
-              <Avatar src="avatar.png" alt="it's me" color="#1D2F6F" />
+
+              <Avatar
+                src="avatar.png"
+                component={Link}
+                to="/profile"
+                alt="it's me"
+                color="#1D2F6F"
+              />
             </Group>
           </Group>
         </Group>
