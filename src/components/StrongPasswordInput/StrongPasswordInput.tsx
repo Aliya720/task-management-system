@@ -5,8 +5,8 @@ import {
   Progress,
   Text,
   Popover,
-  Box,
   rem,
+  Group,
 } from "@mantine/core";
 import { regex } from "../../constants/regex";
 
@@ -29,7 +29,7 @@ const PasswordRequirement = ({
       ) : (
         <IconX style={{ width: rem(14), height: rem(14) }} />
       )}{" "}
-      <Box ml={10}>{label}</Box>
+      <span style={{ marginLeft: 10 }}>{label}</span>
     </Text>
   );
 };
@@ -79,7 +79,7 @@ const StrongPasswordInput = (props: {
       transitionProps={{ transition: "pop" }}
     >
       <Popover.Target>
-        <div
+        <Group
           onFocusCapture={() => setPopoverOpened(true)}
           onBlurCapture={() => setPopoverOpened(false)}
         >
@@ -88,8 +88,9 @@ const StrongPasswordInput = (props: {
             placeholder="password"
             value={props.value}
             onChange={props.onChange}
+            flex={1}
           />
-        </div>
+        </Group>
       </Popover.Target>
       <Popover.Dropdown>
         <Progress color={color} value={strength} size={5} mb="xs" />

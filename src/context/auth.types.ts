@@ -1,10 +1,11 @@
 export type UserDataType = {
     firstName: string,
-    lastName: string,
+    secondName: string,
     username: string,
     email: string,
-    password: string
-    image: string
+    password: string,
+    image: string,
+    uid: string,
 }
 
 export type UserList = {
@@ -15,6 +16,6 @@ export type AuthType = {
     user: UserDataType | null;
     isAuthenticated: boolean
     signIn: (userData: UserDataType) => void;
-    signUp: (userData: UserDataType) => void;
     signOut: () => void;
+    signUp: (userData: UserDataType) => void;
 } 

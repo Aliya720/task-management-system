@@ -13,8 +13,9 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import { IconCheck, IconEdit, IconPlus } from "@tabler/icons-react";
 import { useState } from "react";
-import { app } from "../../firebaseConfig";
-import { doc, getFirestore, setDoc } from "firebase/firestore";
+import { db } from "../../firebaseConfig";
+import { doc, setDoc } from "firebase/firestore";
+import { useAuthContext } from "../../context/AuthContext";
 
 const Profile = () => {
   const [image, setImage] = useState<File | null>(null);
@@ -24,14 +25,13 @@ const Profile = () => {
   const [secondName, setSecondName] = useState("");
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
+  const Auth = useAuthContext();
 
   const handleEdit = () => {
     setIsEditing(!isEditing);
   };
-  // const profilePic = URL.createObjectURL(image!);
 
-  const submitData = async () => {
-    const db = getFirestore(app);
+  const updateData = async () => {
     const userData = {
       id: 3,
       email: "zasuwemosse-5694@yopmail.com",
@@ -39,12 +39,11 @@ const Profile = () => {
       secondName: secondName,
       password: password,
       username: userName,
-      // photo: profilePic,
+      photo: URL.createObjectURL(image!),
     };
     const usersRef = doc(db, "users", "3");
     await setDoc(usersRef, userData);
   };
-
   return (
     <>
       <AppShell padding="md">
@@ -135,7 +134,11 @@ const Profile = () => {
                     placeholder="Enter username"
                     onChange={(e) => setUserName(e.target.value)}
                   />
-                  <TextInput label="Email" defaultValue="abc" disabled />
+                  <TextInput
+                    label="Email"
+                    defaultValue={Auth?.user?.email}
+                    disabled
+                  />
                   <PasswordInput
                     label="Password"
                     visible={visible}
@@ -161,7 +164,7 @@ const Profile = () => {
                       Cancel
                     </Button>
                     <Button
-                      onClick={submitData}
+                      onClick={updateData}
                       radius="xl"
                       color="#1D2F6F"
                       flex={1}
@@ -206,9 +209,14 @@ const Profile = () => {
                       marginTop: "2rem",
                     }}
                   >
-                    <Title order={4}>Full name :</Title>{" "}
-                    <Title order={4}> Username : </Title>
-                    <Title order={4}>Email address : </Title>
+                    <Title order={4}>
+                      Full name : {Auth?.user?.firstName}{" "}
+                      {Auth?.user?.secondName}
+                    </Title>{" "}
+                    <Title order={4}> Username : {Auth?.user?.username}</Title>
+                    <Title order={4}>
+                      Email address : {Auth?.user?.email}{" "}
+                    </Title>
                   </Flex>
                   <Button
                     onClick={handleEdit}

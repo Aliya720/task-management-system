@@ -6,6 +6,7 @@ import Profile from "./pages/User/Profile";
 import MyTask from "./pages/MyTask/MyTask";
 import Layout from "./components/Layouts/Layout";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
+import SignUp from "./pages/SignUp/SignUp";
 
 function App() {
   const router = useRoutes([
@@ -14,8 +15,12 @@ function App() {
       element: <Home />,
     },
     {
-      path: "sign-in",
+      path: "/sign-in",
       element: <SignIn />,
+    },
+    {
+      path: "/sign-up",
+      element: <SignUp />,
     },
     {
       path: "/",

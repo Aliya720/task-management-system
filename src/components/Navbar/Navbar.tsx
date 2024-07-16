@@ -48,7 +48,7 @@ const Navbar = () => {
               <Avatar
                 src="avatar.png"
                 component={Link}
-                to="/profile"
+                to="/user/profile"
                 alt="it's me"
                 color="#1D2F6F"
               />
@@ -67,12 +67,12 @@ const Navbar = () => {
         >
           <Group style={{ flexDirection: "column" }}>
             <NavLink
-              href="/dashboard"
+              href="/user/dashboard"
               label="Dashboard"
               leftSection={<IconLayoutDashboard size="1rem" stroke={1.5} />}
             />
             <NavLink
-              href="/my-task"
+              href="/user/my-task"
               label="My Task"
               leftSection={<IconChecklist size="1rem" stroke={1.5} />}
             />

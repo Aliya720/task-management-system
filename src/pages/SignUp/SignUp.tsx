@@ -7,13 +7,18 @@ import {
   TextInput,
   Title,
 } from "@mantine/core";
-import { doc, getFirestore, setDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import { useState } from "react";
-import { app } from "../../firebaseConfig";
+import { auth, db } from "../../firebaseConfig";
 import { regex } from "../../constants/regex";
-import StrongPasswordInput from "../StrongPasswordInput/StrongPasswordInput";
+import StrongPasswordInput from "../../components/StrongPasswordInput/StrongPasswordInput";
+import { NavLink } from "react-router-dom";
+import { useAuthContext } from "../../context/AuthContext";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 
-const SignUpForm = () => {
+const SignUp = () => {
+  const AuthContext = useAuthContext();
+
   const [firstName, setFirstName] = useState("");
   const [secondName, setSecondName] = useState("");
   const [userName, setUserName] = useState("");
@@ -24,16 +29,22 @@ const SignUpForm = () => {
   const [email, setEmail] = useState("");
 
   const submitData = async () => {
-    const db = getFirestore(app);
+    createUserWithEmailAndPassword(auth, email, password);
+    const user = auth.currentUser;
     const userData = {
       email: email,
       firstName: firstName,
       secondName: secondName,
       password: password,
       username: userName,
+      image: "",
     };
-    const usersRef = doc(db, "users", email);
-    await setDoc(usersRef, userData);
+    console.log(user);
+    if (user) {
+      const usersRef = doc(db, "users", user.uid);
+      await setDoc(usersRef, userData);
+      AuthContext?.signUp(userData);
+    }
   };
 
   const handleSubmit = () => {
@@ -88,18 +99,16 @@ const SignUpForm = () => {
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
           />
-          <Button
-            onClick={handleSubmit}
-            radius="xl"
-            color="#1D2F6F"
-            style={{ marginLeft: "auto" }}
-          >
+          <Button onClick={handleSubmit} radius="xl" color="#1D2F6F">
             Sign Up
           </Button>
+          <Text>
+            Already have account. <NavLink to="/sign-in">Sign-In</NavLink>
+          </Text>
         </Flex>
       </Center>
     </>
   );
 };
 
-export default SignUpForm;
+export default SignUp;
