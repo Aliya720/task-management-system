@@ -1,7 +1,7 @@
 import { createContext, ReactNode, useContext, useState } from "react";
 import { AuthType, UserDataType } from "./auth.types";
 import { useNavigate } from "react-router-dom";
-import { doc, getDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 import { User } from "firebase/auth";
 
@@ -12,6 +12,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [userData, setUserData] = useState<UserDataType | null>(null);
   const [userCredential, setUserCredential] = useState<User>();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userNameList, setUserNameList] = useState<string[]>([]);
 
   const signIn = async (user: User) => {
     setUserCredential(user);
@@ -29,12 +30,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) {
       console.error("Error fetching user:", error);
     }
+    fetchUserNames();
+  };
+
+  const fetchUserNames = async () => {
+    const usersCollection = collection(db, "users");
+    const usersSnapshot = await getDocs(usersCollection);
+    const userNames = usersSnapshot.docs.map(
+      (doc) => `${doc.data().firstName} ${doc.data().secondName}`
+    );
+    setUserNameList(userNames);
   };
 
   const signUp = (user: User) => {
     setIsAuthenticated(true);
     setUserCredential(user);
     navigate("/user");
+    fetchUserNames();
   };
 
   const signOut = () => {
@@ -52,6 +64,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         signUp,
         setUserData,
         userCredential,
+        fetchUserNames,
+        userNameList,
       }}
     >
       {children}

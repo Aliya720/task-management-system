@@ -40,7 +40,7 @@ const SignIn = () => {
   };
   return (
     <Center style={{ height: "100vh", width: "100vw" }}>
-      <Flex direction="column" gap="1rem" flex={0.2}>
+      <Flex direction="column" gap="1rem" style={{ width: "20rem" }}>
         <Title order={1}>Sign In</Title>
         <Text c={isSuccessMessage ? "green" : "red"}>{message}</Text>
         <TextInput

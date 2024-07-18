@@ -21,29 +21,59 @@ import {
   IconUser,
 } from "@tabler/icons-react";
 import "@mantine/dates/styles.css";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "../../firebaseConfig";
+import { useAuthContext } from "../../context/AuthContext";
 
 const NewTask = () => {
   const [opened, { open, close }] = useDisclosure(false);
   const [date, setDate] = useState<Date | null>(null);
+  const [taskName, setTaskName] = useState("");
+  const [time, setTime] = useState("");
+  const [assignee, setAssignee] = useState<string[]>([]);
+
   const [tags, setTags] = useState<string[]>([]);
-  const user = ["as", "asd", "asdf"];
+  const [message, setMessage] = useState("");
+  const authContext = useAuthContext();
 
   const assigneeFilter: OptionsFilter = ({ options, search }) => {
     const filtered = (options as ComboboxItem[]).filter((option) =>
       option.label.toLowerCase().trim().includes(search.toLowerCase().trim())
     );
-
     filtered.sort((a, b) => a.label.localeCompare(b.label));
     return filtered;
+  };
+
+  const handleCreateTask = async () => {
+    try {
+      const task = {
+        Name: taskName,
+        Date: date,
+        Time: time,
+        Assignee: assignee,
+        Tags: tags,
+      };
+      const userId = authContext?.userCredential?.uid;
+      const usersRef = doc(db, `users/${userId}/task`, taskName);
+      await setDoc(usersRef, task);
+      setMessage("Task added successfully");
+    } catch (error) {
+      setMessage("Something went wrong");
+    }
   };
 
   return (
     <>
       <Modal opened={opened} onClose={close} title="Add New Task">
         <Flex gap="1rem" direction="column">
+          <Text>{message}</Text>
           <Flex align="center" gap="md">
             <IconCheckbox stroke={1.5} />
-            <Input placeholder="Name of Task" flex={1} />
+            <Input
+              placeholder="Name of Task"
+              flex={1}
+              onChange={(e) => setTaskName(e.target.value)}
+            />
           </Flex>
 
           <Flex align="center" gap="md">
@@ -60,7 +90,7 @@ const NewTask = () => {
           <Flex align="center" gap="md">
             <IconClock stroke={1.5} />
             <Text style={{ width: "3rem" }}>Time</Text>
-            <TimeInput flex={1} />
+            <TimeInput flex={1} onChange={(e) => setTime(e.target.value)} />
           </Flex>
           <Flex align="center" gap="md">
             <IconTag stroke={1.5} />
@@ -78,13 +108,19 @@ const NewTask = () => {
             <Text style={{ width: "3rem" }}>Assign</Text>
             <TagsInput
               placeholder="Enter assignee"
-              data={user}
+              data={authContext?.userNameList}
               filter={assigneeFilter}
               flex={1}
+              onChange={setAssignee}
             />
           </Flex>
           <Textarea label="Description" />
-          <Button style={{ marginLeft: "auto" }} radius="xl" color="#1D2F6F">
+          <Button
+            style={{ marginLeft: "auto" }}
+            radius="xl"
+            color="#1D2F6F"
+            onClick={handleCreateTask}
+          >
             Create task
           </Button>
         </Flex>

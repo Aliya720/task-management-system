@@ -20,4 +20,6 @@ export type AuthType = {
     signUp: (userData: User) => void;
     setUserData: React.Dispatch<React.SetStateAction<UserDataType | null>>
     userCredential: User | undefined
+    fetchUserNames: () => Promise<void>
+    userNameList: string[]
 } 

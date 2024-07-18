@@ -47,7 +47,7 @@ const Profile = () => {
         username: userName,
         image: imageUrl,
       };
-      const usersRef = doc(db, "users", authContext?.userData?.uid);
+      const usersRef = doc(db, "users", authContext?.userData?.uid as string);
       await updateDoc(usersRef, userData);
       await updatePassword(authContext?.userCredential as User, password);
       authContext?.setUserData(userData as UserDataType);
@@ -96,7 +96,7 @@ const Profile = () => {
                   <Avatar
                     radius="md"
                     size="15rem"
-                    src={imageUrl}
+                    src={image ? imageUrl : authContext?.userData?.image}
                     alt="it's me"
                     color="#1D2F6F"
                   />

@@ -18,9 +18,12 @@ import {
 } from "@tabler/icons-react";
 import NewTask from "../NewTask/NewTask";
 import { Link } from "react-router-dom";
+import { useAuthContext } from "../../context/AuthContext";
 
 const Navbar = () => {
   const [opened, { toggle }] = useDisclosure();
+  const authContext = useAuthContext();
+  console.log(authContext?.userData?.image);
 
   return (
     <AppShell
@@ -46,7 +49,7 @@ const Navbar = () => {
               <NewTask />
 
               <Avatar
-                src="avatar.png"
+                src={authContext?.userData?.image}
                 component={Link}
                 to="/user/profile"
                 alt="it's me"
