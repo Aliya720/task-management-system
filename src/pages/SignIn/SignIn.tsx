@@ -11,27 +11,38 @@ import {
 } from "@mantine/core";
 import { NavLink } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../firebaseConfig";
+import { firebaseAuth } from "../../firebaseConfig";
 
 const SignIn = () => {
-  const AuthContext = useAuthContext();
+  const authContext = useAuthContext();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
+  const [message, setMessage] = useState("");
+  const [isSuccessMessage, setIsSuccessMessage] = useState(false);
 
   const handleSubmit = async () => {
-    const Auth = await signInWithEmailAndPassword(auth, email, password);
-    if (Auth) {
-      console.log(Auth.user);
-      AuthContext?.signIn(Auth.user);
-      setSuccessMessage("Logged in successfully");
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        firebaseAuth,
+        email,
+        password
+      );
+      if (userCredential) {
+        setIsSuccessMessage(true);
+        const user = userCredential.user;
+        authContext?.signIn(user);
+        setMessage("Logged in successfully");
+      }
+    } catch (error) {
+      setIsSuccessMessage(false);
+      setMessage("Invalid user id and password");
     }
   };
   return (
     <Center style={{ height: "100vh", width: "100vw" }}>
       <Flex direction="column" gap="1rem" flex={0.2}>
         <Title order={1}>Sign In</Title>
-        <Text c="green">{successMessage}</Text>
+        <Text c={isSuccessMessage ? "green" : "red"}>{message}</Text>
         <TextInput
           label="Email"
           placeholder="Enter email"

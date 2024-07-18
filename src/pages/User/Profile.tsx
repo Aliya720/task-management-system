@@ -14,8 +14,10 @@ import { useDisclosure } from "@mantine/hooks";
 import { IconCheck, IconEdit, IconPlus } from "@tabler/icons-react";
 import { useState } from "react";
 import { db } from "../../firebaseConfig";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 import { useAuthContext } from "../../context/AuthContext";
+import { UserDataType } from "../../context/auth.types";
+import { updatePassword, User } from "firebase/auth";
 
 const Profile = () => {
   const [image, setImage] = useState<File | null>(null);
@@ -23,27 +25,57 @@ const Profile = () => {
   const [visible, { toggle }] = useDisclosure(false);
   const [firstName, setFirstName] = useState("");
   const [secondName, setSecondName] = useState("");
-  const [userName, setUserName] = useState("");
+  const [userName, setUserDataName] = useState("");
   const [password, setPassword] = useState("");
-  const Auth = useAuthContext();
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [alertMessage, setAlertMessage] = useState("");
+  const authContext = useAuthContext();
+  const imageUrl = image ? URL.createObjectURL(image) : "";
 
   const handleEdit = () => {
     setIsEditing(!isEditing);
   };
 
   const updateData = async () => {
-    const userData = {
-      id: 3,
-      email: "zasuwemosse-5694@yopmail.com",
-      firstName: firstName,
-      secondName: secondName,
-      password: password,
-      username: userName,
-      photo: URL.createObjectURL(image!),
-    };
-    const usersRef = doc(db, "users", "3");
-    await setDoc(usersRef, userData);
+    try {
+      const userData = {
+        uid: authContext?.userData?.uid,
+        email: authContext?.userData?.email,
+        firstName: firstName,
+        secondName: secondName,
+        password: password,
+        username: userName,
+        image: imageUrl,
+      };
+      const usersRef = doc(db, "users", authContext?.userData?.uid);
+      await updateDoc(usersRef, userData);
+      await updatePassword(authContext?.userCredential as User, password);
+      authContext?.setUserData(userData as UserDataType);
+    } catch (error) {
+      console.log("Error", error);
+    }
   };
+
+  const handleUpdate = async () => {
+    if (!image) {
+      setAlertMessage("Choose Image!");
+    } else if (firstName.length == 0) {
+      setAlertMessage("First name can not be empty");
+    } else if (secondName.length == 0) {
+      setAlertMessage("Second name can not be empty");
+    } else if (userName.length == 0) {
+      setAlertMessage("username can not be empty");
+    } else if (password.length == 0) {
+      setAlertMessage("password can not be empty");
+    } else if (password !== confirmPassword) {
+      setAlertMessage("password doesn't match");
+    } else {
+      setAlertMessage("Updated Successfully");
+      updateData();
+      handleEdit();
+    }
+  };
+
   return (
     <>
       <AppShell padding="md">
@@ -61,25 +93,14 @@ const Profile = () => {
             {isEditing ? (
               <>
                 <Flex gap="2rem" align="center">
-                  {image ? (
-                    <Avatar
-                      radius="md"
-                      size="15rem"
-                      src={URL.createObjectURL(image)}
-                      alt="it's me"
-                      color="#1D2F6F"
-                    />
-                  ) : (
-                    <Avatar
-                      radius="md"
-                      size="15rem"
-                      src="avatar.png"
-                      alt="it's me"
-                      color="#1D2F6F"
-                    />
-                  )}
+                  <Avatar
+                    radius="md"
+                    size="15rem"
+                    src={imageUrl}
+                    alt="it's me"
+                    color="#1D2F6F"
+                  />
                   <Flex justify="center" direction="column" gap={15}>
-                    <Title order={2}>User Name</Title>
                     <FileButton
                       onChange={setImage}
                       accept="image/png,image/jpeg"
@@ -115,34 +136,39 @@ const Profile = () => {
                   }}
                 >
                   {" "}
+                  <Text c="red">{alertMessage}</Text>
                   <Flex justify="space-between" gap="1rem">
                     <TextInput
                       flex={1}
                       label="First name"
                       placeholder="Enter your first name"
+                      defaultValue={authContext?.userData?.firstName}
                       onChange={(e) => setFirstName(e.target.value)}
                     />
                     <TextInput
                       flex={1}
                       label="Second name"
                       placeholder="Enter your second name"
+                      defaultValue={authContext?.userData?.secondName}
                       onChange={(e) => setSecondName(e.target.value)}
                     />
                   </Flex>
                   <TextInput
                     label="Username"
                     placeholder="Enter username"
-                    onChange={(e) => setUserName(e.target.value)}
+                    defaultValue={authContext?.userData?.username}
+                    onChange={(e) => setUserDataName(e.target.value)}
                   />
                   <TextInput
                     label="Email"
-                    defaultValue={Auth?.user?.email}
+                    defaultValue={authContext?.userData?.email}
                     disabled
                   />
                   <PasswordInput
                     label="Password"
                     visible={visible}
                     onVisibilityChange={toggle}
+                    onChange={(e) => setPassword(e.target.value)}
                     placeholder="password"
                   />
                   <PasswordInput
@@ -150,7 +176,7 @@ const Profile = () => {
                     visible={visible}
                     onVisibilityChange={toggle}
                     placeholder="Confirm password"
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
                   />
                   <Group>
                     <Button
@@ -164,7 +190,7 @@ const Profile = () => {
                       Cancel
                     </Button>
                     <Button
-                      onClick={updateData}
+                      onClick={handleUpdate}
                       radius="xl"
                       color="#1D2F6F"
                       flex={1}
@@ -184,23 +210,13 @@ const Profile = () => {
                   align="flex-start"
                   wrap="nowrap"
                 >
-                  {image ? (
-                    <Avatar
-                      radius="md"
-                      size="45%"
-                      src={URL.createObjectURL(image)}
-                      alt="it's me"
-                      color="#1D2F6F"
-                    />
-                  ) : (
-                    <Avatar
-                      radius="md"
-                      size="45%"
-                      src="avatar.png"
-                      alt="it's me"
-                      color="#1D2F6F"
-                    />
-                  )}
+                  <Avatar
+                    radius="md"
+                    size="45%"
+                    src={imageUrl}
+                    alt="it's me"
+                    color="#1D2F6F"
+                  />
                   <Flex
                     gap="1rem"
                     direction="column"
@@ -210,12 +226,15 @@ const Profile = () => {
                     }}
                   >
                     <Title order={4}>
-                      Full name : {Auth?.user?.firstName}{" "}
-                      {Auth?.user?.secondName}
+                      Full name : {authContext?.userData?.firstName}{" "}
+                      {authContext?.userData?.secondName}
                     </Title>{" "}
-                    <Title order={4}> Username : {Auth?.user?.username}</Title>
                     <Title order={4}>
-                      Email address : {Auth?.user?.email}{" "}
+                      {" "}
+                      Username : {authContext?.userData?.username}
+                    </Title>
+                    <Title order={4}>
+                      Email address : {authContext?.userData?.email}{" "}
                     </Title>
                   </Flex>
                   <Button

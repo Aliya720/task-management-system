@@ -1,3 +1,5 @@
+import { User } from "firebase/auth"
+
 export type UserDataType = {
     firstName: string,
     secondName: string,
@@ -8,14 +10,14 @@ export type UserDataType = {
     uid: string,
 }
 
-export type UserList = {
-    users: UserDataType[]
-}
+
 
 export type AuthType = {
-    user: UserDataType | null;
+    userData: UserDataType | null;
     isAuthenticated: boolean
-    signIn: (userData: UserDataType) => void;
+    signIn: (userData: User) => void;
     signOut: () => void;
-    signUp: (userData: UserDataType) => void;
+    signUp: (userData: User) => void;
+    setUserData: React.Dispatch<React.SetStateAction<UserDataType | null>>
+    userCredential: User | undefined
 } 

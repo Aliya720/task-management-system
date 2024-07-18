@@ -9,16 +9,16 @@ import {
 } from "@mantine/core";
 import { doc, setDoc } from "firebase/firestore";
 import { useState } from "react";
-import { auth, db } from "../../firebaseConfig";
+import { firebaseAuth, db } from "../../firebaseConfig";
 import { regex } from "../../constants/regex";
 import StrongPasswordInput from "../../components/StrongPasswordInput/StrongPasswordInput";
 import { NavLink } from "react-router-dom";
 import { useAuthContext } from "../../context/AuthContext";
 import { createUserWithEmailAndPassword } from "firebase/auth";
+import { UserDataType } from "../../context/auth.types";
 
 const SignUp = () => {
-  const AuthContext = useAuthContext();
-
+  const authContext = useAuthContext();
   const [firstName, setFirstName] = useState("");
   const [secondName, setSecondName] = useState("");
   const [userName, setUserName] = useState("");
@@ -29,21 +29,31 @@ const SignUp = () => {
   const [email, setEmail] = useState("");
 
   const submitData = async () => {
-    createUserWithEmailAndPassword(auth, email, password);
-    const user = auth.currentUser;
-    const userData = {
-      email: email,
-      firstName: firstName,
-      secondName: secondName,
-      password: password,
-      username: userName,
-      image: "",
-    };
-    console.log(user);
-    if (user) {
-      const usersRef = doc(db, "users", user.uid);
-      await setDoc(usersRef, userData);
-      AuthContext?.signUp(userData);
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        firebaseAuth,
+        email,
+        password
+      );
+      console.log();
+      const user = userCredential.user;
+      const userData = {
+        email: email,
+        firstName: firstName,
+        secondName: secondName,
+        password: password,
+        username: userName,
+        image: "",
+        uid: user.uid,
+      };
+      if (user) {
+        const usersRef = doc(db, "users", user.uid);
+        await setDoc(usersRef, userData);
+        authContext?.setUserData(userData as UserDataType);
+        authContext?.signUp(user);
+      }
+    } catch (error) {
+      console.error("Error signing up: ", error);
     }
   };
 

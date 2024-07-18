@@ -3,23 +3,25 @@ import { AuthType, UserDataType } from "./auth.types";
 import { useNavigate } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebaseConfig";
+import { User } from "firebase/auth";
 
 export const AuthContext = createContext<AuthType | null>(null);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate();
-  const [user, setUser] = useState<UserDataType | null>(null);
+  const [userData, setUserData] = useState<UserDataType | null>(null);
+  const [userCredential, setUserCredential] = useState<User>();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  const signIn = async (userData: UserDataType) => {
+  const signIn = async (user: User) => {
+    setUserCredential(user);
     setIsAuthenticated(true);
-    console.log(userData);
-    const usersRef = doc(db, "users", userData.uid);
+    const usersRef = doc(db, "users", user.uid);
     try {
       const userSnap = await getDoc(usersRef);
       if (userSnap.exists()) {
-        setUser(userSnap.data() as UserDataType);
-        console.log("User signed in", userSnap.data());
+        setUserData(userSnap.data() as UserDataType);
+        console.log(userSnap.data());
         navigate("/user");
       } else {
         console.error("No such user!");
@@ -29,20 +31,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const signUp = (userData: UserDataType) => {
+  const signUp = (user: User) => {
     setIsAuthenticated(true);
-    setUser(userData);
+    setUserCredential(user);
     navigate("/user");
   };
 
   const signOut = () => {
-    setUser(null);
+    setUserData(null);
     setIsAuthenticated(false);
   };
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, user, signIn, signOut, signUp }}
+      value={{
+        isAuthenticated,
+        userData,
+        signIn,
+        signOut,
+        signUp,
+        setUserData,
+        userCredential,
+      }}
     >
       {children}
     </AuthContext.Provider>
