@@ -24,8 +24,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUserData(userSnap.data() as UserDataType);
         console.log(userSnap.data());
         navigate("/user");
-      } else {
-        console.error("No such user!");
       }
     } catch (error) {
       console.error("Error fetching user:", error);
@@ -64,7 +62,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         signUp,
         setUserData,
         userCredential,
-        fetchUserNames,
         userNameList,
       }}
     >

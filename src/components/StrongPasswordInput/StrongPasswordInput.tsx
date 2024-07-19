@@ -9,6 +9,7 @@ import {
   Group,
 } from "@mantine/core";
 import { regex } from "../../constants/regex";
+import { CustomInputProps } from "./customInputProps.types";
 
 const PasswordRequirement = ({
   meets,
@@ -53,22 +54,19 @@ const getStrength = (password: string) => {
   return Math.max(100 - (100 / (requirements.length + 1)) * multiplier, 10);
 };
 
-const StrongPasswordInput = (props: {
-  value: string;
-  onChange: React.ChangeEventHandler<HTMLInputElement>;
-}) => {
+const StrongPasswordInput = ({ value, onChange }: CustomInputProps) => {
   const [popoverOpened, setPopoverOpened] = useState(false);
-  // const [value, setValue] = useState("");
+  const inputValue = value as string;
 
   const checks = requirements.map((requirement, index) => (
     <PasswordRequirement
       key={index}
       label={requirement.label}
-      meets={requirement.re.test(props.value)}
+      meets={requirement.re.test(inputValue)}
     />
   ));
 
-  const strength = getStrength(props.value);
+  const strength = getStrength(inputValue);
   const color = strength === 100 ? "teal" : strength > 50 ? "yellow" : "red";
 
   return (
@@ -86,8 +84,8 @@ const StrongPasswordInput = (props: {
           <PasswordInput
             label="password"
             placeholder="password"
-            value={props.value}
-            onChange={props.onChange}
+            value={inputValue}
+            onChange={onChange}
             flex={1}
           />
         </Group>
@@ -96,7 +94,7 @@ const StrongPasswordInput = (props: {
         <Progress color={color} value={strength} size={5} mb="xs" />
         <PasswordRequirement
           label="Includes at least 6 characters"
-          meets={props.value.length > 5}
+          meets={inputValue.length > 5}
         />
         {checks}
       </Popover.Dropdown>

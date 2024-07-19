@@ -16,34 +16,51 @@ import { NavLink } from "react-router-dom";
 import { useAuthContext } from "../../context/AuthContext";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { UserDataType } from "../../context/auth.types";
+import { useForm } from "@mantine/form";
+import { SignUpFormType } from "./form.type";
 
 const SignUp = () => {
   const authContext = useAuthContext();
-  const [firstName, setFirstName] = useState("");
-  const [secondName, setSecondName] = useState("");
-  const [userName, setUserName] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [alertMessage, setAlertMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
-  const [email, setEmail] = useState("");
 
-  const submitData = async () => {
+  const form = useForm<SignUpFormType>({
+    initialValues: {
+      email: "",
+      firstName: "",
+      secondName: "",
+      userName: "",
+      password: "",
+      confirmPassword: "",
+    },
+    validate: {
+      email: (value) => (regex.Email.test(value) ? null : "Email is Invalid"),
+      firstName: (value) => (value ? null : "First Name is required"),
+      secondName: (value) => (value ? null : "Second Name is required"),
+      userName: (value) => (value ? null : "Username is required"),
+      password: (value) =>
+        value.length >= 6
+          ? null
+          : "Password must be at least 6 characters long",
+      confirmPassword: (value, values) =>
+        value === values.password ? null : "Passwords do not match",
+    },
+  });
+
+  const handleSubmit = async (values: SignUpFormType) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(
         firebaseAuth,
-        email,
-        password
+        values.email,
+        values.password
       );
       console.log();
       const user = userCredential.user;
       const userData = {
-        email: email,
-        firstName: firstName,
-        secondName: secondName,
-        password: password,
-        username: userName,
-        image: "",
+        email: values.email,
+        firstName: values.firstName,
+        secondName: values.secondName,
+        password: values.password,
+        username: values.userName,
         uid: user.uid,
       };
       if (user) {
@@ -52,66 +69,59 @@ const SignUp = () => {
         authContext?.setUserData(userData as UserDataType);
         authContext?.signUp(user);
       }
+      setSuccessMessage("Signed Up successfully");
     } catch (error) {
       console.error("Error signing up: ", error);
     }
   };
 
-  const handleSubmit = () => {
-    if (!regex.Email.test(email)) {
-      setAlertMessage("Email is Invalid");
-    } else if (password !== confirmPassword) {
-      setAlertMessage("password doesn't match");
-    } else {
-      submitData();
-      setAlertMessage("");
-      setSuccessMessage("Signed Up successfully");
-    }
-  };
   return (
     <>
       <Center style={{ height: "100vh", width: "100vw" }}>
         <Flex direction="column" gap="1rem">
           <Title order={1}>Sign Up</Title>
-          <Text c="red">{alertMessage}</Text>
+
           <Text c="green">{successMessage}</Text>
-          <Flex justify="space-between" gap="1rem">
-            <TextInput
-              flex={1}
-              label="First name"
-              placeholder="Enter your first name"
-              onChange={(e) => setFirstName(e.target.value)}
-            />
-            <TextInput
-              flex={1}
-              label="Second name"
-              placeholder="Enter your second name"
-              onChange={(e) => setSecondName(e.target.value)}
-            />
-          </Flex>
-          <TextInput
-            label="Username"
-            placeholder="Enter username"
-            onChange={(e) => setUserName(e.target.value)}
-          />
-          <TextInput
-            label="Email"
-            placeholder="Enter email"
-            onChange={(e) => setEmail(e.target.value)}
-          />{" "}
-          <StrongPasswordInput
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <PasswordInput
-            label="Confirm password"
-            placeholder="Confirm password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          />
-          <Button onClick={handleSubmit} radius="xl" color="#1D2F6F">
-            Sign Up
-          </Button>
+          <form onSubmit={form.onSubmit(handleSubmit)}>
+            <Flex direction="column" gap="1rem">
+              <Flex justify="space-between" gap="1rem">
+                <TextInput
+                  flex={1}
+                  label="First name"
+                  placeholder="Enter your first name"
+                  {...form.getInputProps("firstName")}
+                />
+                <TextInput
+                  flex={1}
+                  label="Second name"
+                  placeholder="Enter your second name"
+                  {...form.getInputProps("secondName")}
+                />
+              </Flex>
+              <TextInput
+                label="Username"
+                placeholder="Enter username"
+                {...form.getInputProps("userName")}
+              />
+              <TextInput
+                label="Email"
+                placeholder="Enter email"
+                {...form.getInputProps("email")}
+              />{" "}
+              <StrongPasswordInput
+                {...form.getInputProps("password")}
+                key={form.key("password")}
+              />
+              <PasswordInput
+                label="Confirm password"
+                placeholder="Confirm password"
+                {...form.getInputProps("confirmPassword")}
+              />
+              <Button type="submit" radius="xl" color="#1D2F6F">
+                Sign Up
+              </Button>
+            </Flex>
+          </form>
           <Text>
             Already have account. <NavLink to="/sign-in">Sign-In</NavLink>
           </Text>

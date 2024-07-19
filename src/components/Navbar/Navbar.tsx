@@ -23,7 +23,7 @@ import { useAuthContext } from "../../context/AuthContext";
 const Navbar = () => {
   const [opened, { toggle }] = useDisclosure();
   const authContext = useAuthContext();
-  console.log(authContext?.userData?.image);
+  // console.log(authContext?.userData?.image);
 
   return (
     <AppShell

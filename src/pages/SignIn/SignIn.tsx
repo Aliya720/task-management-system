@@ -12,20 +12,27 @@ import {
 import { NavLink } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { firebaseAuth } from "../../firebaseConfig";
+import { useForm } from "@mantine/form";
+import { SignInFormType } from "./form.type";
 
 const SignIn = () => {
   const authContext = useAuthContext();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [isSuccessMessage, setIsSuccessMessage] = useState(false);
 
-  const handleSubmit = async () => {
+  const form = useForm<SignInFormType>({
+    initialValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const handleSubmit = async (values: SignInFormType) => {
     try {
       const userCredential = await signInWithEmailAndPassword(
         firebaseAuth,
-        email,
-        password
+        values.email,
+        values.password
       );
       if (userCredential) {
         setIsSuccessMessage(true);
@@ -43,21 +50,23 @@ const SignIn = () => {
       <Flex direction="column" gap="1rem" style={{ width: "20rem" }}>
         <Title order={1}>Sign In</Title>
         <Text c={isSuccessMessage ? "green" : "red"}>{message}</Text>
-        <TextInput
-          label="Email"
-          placeholder="Enter email"
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <PasswordInput
-          label="Password"
-          placeholder="Enter password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <Button onClick={handleSubmit} radius="xl" color="#1D2F6F">
-          Sign In
-        </Button>
-
+        <form onSubmit={form.onSubmit(handleSubmit)}>
+          <Flex direction="column" gap="1rem">
+            <TextInput
+              label="Email"
+              placeholder="Enter email"
+              {...form.getInputProps("email")}
+            />
+            <PasswordInput
+              label="Password"
+              placeholder="Enter password"
+              {...form.getInputProps("password")}
+            />
+            <Button type="submit" radius="xl" color="#1D2F6F">
+              Sign In
+            </Button>
+          </Flex>
+        </form>
         <Text>
           New User ? <NavLink to="/sign-up">Sign-up</NavLink>
         </Text>
