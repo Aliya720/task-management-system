@@ -66,8 +66,7 @@ const SignUp = () => {
       if (user) {
         const usersRef = doc(db, "users", user.uid);
         await setDoc(usersRef, userData);
-        authContext?.setUserData(userData as UserDataType);
-        authContext?.signUp(user);
+        authContext?.signUp(userData as UserDataType);
       }
       setSuccessMessage("Signed Up successfully");
     } catch (error) {

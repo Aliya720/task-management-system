@@ -14,11 +14,10 @@ export type UserDataType = {
 
 export type AuthType = {
     userData: UserDataType | null;
-    isAuthenticated: boolean
     signIn: (userData: User) => void;
-    signOut: () => void;
-    signUp: (userData: User) => void;
+    logOut: () => void;
+    signUp: (userData: UserDataType) => void;
     setUserData: React.Dispatch<React.SetStateAction<UserDataType | null>>
     userCredential: User | undefined
-    userNameList: string[]
+    userList: string[]
 } 

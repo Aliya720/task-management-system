@@ -50,20 +50,29 @@ const NewTask = () => {
       assignee: [
         `${authContext?.userData?.firstName} ${authContext?.userData?.secondName}`,
       ],
+      description: "",
     },
     validate: {
       taskName: (value) => (value ? null : "TaskName can not be Empty"),
     },
   });
 
+  const userNameList: string[] | undefined = authContext?.userList.map(
+    (user) => {
+      return `${user.firstName} ${user.secondName}`;
+    }
+  );
+
   const handleCreateTask = async (values: NewTaskFormType) => {
     try {
       const task = {
-        Name: values.taskName,
-        Date: date,
+        name: values.taskName,
+        dueDate: date,
         // Time: time,
-        Assignee: values.assignee,
-        Tags: values.tags,
+        assignee: values.assignee,
+        tags: values.tags,
+        description: values.description,
+        status: "in-progress",
       };
       const userId = authContext?.userCredential?.uid;
       const usersRef = doc(db, `users/${userId}/task`, values.taskName);
@@ -119,13 +128,16 @@ const NewTask = () => {
               <Text style={{ width: "3rem" }}>Assign</Text>
               <TagsInput
                 placeholder="Enter assignee"
-                data={authContext?.userNameList}
+                data={userNameList}
                 filter={assigneeFilter}
                 flex={1}
                 {...form.getInputProps("assignee")}
               />
             </Flex>
-            <Textarea label="Description" />
+            <Textarea
+              label="Description"
+              {...form.getInputProps("description")}
+            />
             <Button
               style={{ marginLeft: "auto" }}
               radius="xl"

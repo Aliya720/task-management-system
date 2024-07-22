@@ -23,7 +23,6 @@ import { useAuthContext } from "../../context/AuthContext";
 const Navbar = () => {
   const [opened, { toggle }] = useDisclosure();
   const authContext = useAuthContext();
-  // console.log(authContext?.userData?.image);
 
   return (
     <AppShell
@@ -70,30 +69,36 @@ const Navbar = () => {
         >
           <Group style={{ flexDirection: "column" }}>
             <NavLink
-              href="/user/dashboard"
+              component={Link}
+              to="/user/dashboard"
               label="Dashboard"
               leftSection={<IconLayoutDashboard size="1rem" stroke={1.5} />}
             />
             <NavLink
-              href="/user/my-task"
+              component={Link}
+              to="/user/my-task"
               label="My Task"
               leftSection={<IconChecklist size="1rem" stroke={1.5} />}
             />
             <NavLink
-              href="/"
+              component={Link}
+              to="/user/notification"
               label="Notification"
               leftSection={<IconBellRinging size="1rem" stroke={1.5} />}
             />
           </Group>
           <Group style={{ flexDirection: "column" }}>
             <NavLink
-              href="/"
+              component={Link}
+              to="/setting"
               label="Settings"
               leftSection={<IconSettings size="1rem" stroke={1.5} />}
             />
             <NavLink
-              href="/"
+              component={Link}
+              to="/"
               label="Logout"
+              onClick={authContext?.logOut}
               leftSection={<IconLogout size="1rem" stroke={1.5} />}
             />
           </Group>

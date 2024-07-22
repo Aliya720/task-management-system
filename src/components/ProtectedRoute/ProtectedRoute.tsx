@@ -4,7 +4,7 @@ import Layout from "../Layouts/Layout";
 
 const ProtectedRoute = () => {
   const auth = useAuthContext();
-  return auth?.isAuthenticated ? <Layout /> : <Navigate to="/sign-in" />;
+  return auth?.userCredential ? <Layout /> : <Navigate to="/sign-in" />;
 };
 
 export default ProtectedRoute;

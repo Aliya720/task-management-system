@@ -1,9 +1,14 @@
+import { Button, Center } from "@mantine/core";
 import { NavLink } from "react-router-dom";
 
 const Home = () => {
   return (
     <>
-      <NavLink to="/user">User</NavLink>
+      <Center>
+        <NavLink to="/sign-in">
+          <Button>Sign In </Button>
+        </NavLink>
+      </Center>
     </>
   );
 };
