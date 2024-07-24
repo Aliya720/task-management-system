@@ -10,6 +10,8 @@ import { useNavigate } from "react-router-dom";
 import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 import { db, firebaseAuth } from "../firebaseConfig";
 import { onAuthStateChanged, signOut, User } from "firebase/auth";
+import { admin } from "../constants/admin";
+import { TaskType } from "../components/Tasks/TaskType";
 
 export const AuthContext = createContext<AuthType | null>(null);
 
@@ -18,16 +20,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [userData, setUserData] = useState<UserDataType | null>(null);
   const [userCredential, setUserCredential] = useState<User | undefined>();
   const [userList, setUserList] = useState<string[]>([]);
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
+  const [taskList, setTaskList] = useState<TaskType[] | undefined>();
 
-  // console.log("firebaseAuth", firebaseAuth);
-
+  //to sign in
   const signIn = async (user: User) => {
     const usersRef = doc(db, "users", user.uid);
     try {
       const userSnap = await getDoc(usersRef);
       if (userSnap.exists()) {
         setUserData(userSnap.data() as UserDataType);
-        console.log(userSnap.data());
         navigate("/user");
       }
     } catch (error) {
@@ -36,6 +38,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     fetchUser();
   };
 
+  //to fetch all users data from fire store
   const fetchUser = async () => {
     const usersCollection = collection(db, "users");
     const usersSnapshot = await getDocs(usersCollection);
@@ -45,6 +48,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUserList(users);
   };
 
+  // updating state when admin is logged in
+  useEffect(() => {
+    if (userData?.uid === admin.Id) {
+      setIsAdminLoggedIn(true);
+    } else {
+      setIsAdminLoggedIn(false);
+    }
+  }, [userData]);
+
+  //handle authentication state changes with Firebase
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(firebaseAuth, (currentUser) => {
       setUserCredential(currentUser as User);
@@ -54,12 +67,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
   }, []);
 
+  //sign up function
   const signUp = (user: UserDataType) => {
     setUserData(user);
     navigate("/user");
     fetchUser();
   };
 
+  //log Out
   const logOut = () => {
     setUserData(null);
     signOut(firebaseAuth);
@@ -68,6 +83,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   return (
     <AuthContext.Provider
       value={{
+        isAdminLoggedIn,
         userData,
         signIn,
         logOut,
@@ -75,6 +91,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUserData,
         userCredential,
         userList,
+        taskList,
+        setTaskList,
       }}
     >
       {children}

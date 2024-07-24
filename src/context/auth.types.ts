@@ -1,4 +1,5 @@
 import { User } from "firebase/auth"
+import { TaskType } from "../components/Tasks/TaskType";
 
 export type UserDataType = {
     firstName: string,
@@ -20,4 +21,7 @@ export type AuthType = {
     setUserData: React.Dispatch<React.SetStateAction<UserDataType | null>>
     userCredential: User | undefined
     userList: string[]
+    isAdminLoggedIn: boolean
+    setTaskList: React.Dispatch<React.SetStateAction<TaskType[] | undefined>>
+    taskList: TaskType[] | undefined
 } 

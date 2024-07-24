@@ -7,4 +7,9 @@ const ProtectedRoute = () => {
   return auth?.userCredential ? <Layout /> : <Navigate to="/sign-in" />;
 };
 
+export const AdminProtectedRoute = () => {
+  const auth = useAuthContext();
+  return auth?.isAdminLoggedIn ? <Layout /> : <Navigate to="/user" />;
+};
+
 export default ProtectedRoute;

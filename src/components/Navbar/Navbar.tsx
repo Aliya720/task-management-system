@@ -15,10 +15,13 @@ import {
   IconLogout,
   IconSearch,
   IconSettings,
+  IconUser,
 } from "@tabler/icons-react";
 import NewTask from "../NewTask/NewTask";
 import { Link } from "react-router-dom";
 import { useAuthContext } from "../../context/AuthContext";
+import SettingMenu from "../SettingMenu/SettingMenu";
+import LogOutBtn from "../LogOutBtn/LogOutBtn";
 
 const Navbar = () => {
   const [opened, { toggle }] = useDisclosure();
@@ -86,21 +89,23 @@ const Navbar = () => {
               label="Notification"
               leftSection={<IconBellRinging size="1rem" stroke={1.5} />}
             />
+            {authContext?.isAdminLoggedIn ? (
+              <>
+                <NavLink
+                  component={Link}
+                  to="/admin/users"
+                  label="Users"
+                  leftSection={<IconUser size="1rem" stroke={1.5} />}
+                />
+              </>
+            ) : (
+              <></>
+            )}
           </Group>
+
           <Group style={{ flexDirection: "column" }}>
-            <NavLink
-              component={Link}
-              to="/setting"
-              label="Settings"
-              leftSection={<IconSettings size="1rem" stroke={1.5} />}
-            />
-            <NavLink
-              component={Link}
-              to="/"
-              label="Logout"
-              onClick={authContext?.logOut}
-              leftSection={<IconLogout size="1rem" stroke={1.5} />}
-            />
+            <SettingMenu />
+            <LogOutBtn />
           </Group>
         </Group>
       </AppShell.Navbar>

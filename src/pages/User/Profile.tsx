@@ -4,81 +4,24 @@ import {
   Button,
   FileButton,
   Flex,
-  Group,
-  PasswordInput,
   Text,
-  TextInput,
   Title,
 } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
-import { IconCheck, IconEdit, IconPlus } from "@tabler/icons-react";
+import { IconEdit, IconPlus } from "@tabler/icons-react";
 import { useState } from "react";
-import { db } from "../../firebaseConfig";
-import { doc, updateDoc } from "firebase/firestore";
 import { useAuthContext } from "../../context/AuthContext";
+import UpdateUserForm from "../../components/UpdateUserForm/UpdateUserForm";
 import { UserDataType } from "../../context/auth.types";
-import { updatePassword, User } from "firebase/auth";
-import { useForm } from "@mantine/form";
-import { EditProfileFormType } from "./form.type";
 
 const Profile = () => {
   const [image, setImage] = useState<File | null>(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [visible, { toggle }] = useDisclosure(false);
-  const [successMessage, setSuccessMessage] = useState("");
   const authContext = useAuthContext();
   const imageUrl = image ? URL.createObjectURL(image) : "";
 
+  //for conditionally displaying UI
   const handleEdit = () => {
     setIsEditing(!isEditing);
-  };
-
-  const form = useForm<EditProfileFormType>({
-    initialValues: {
-      firstName: authContext?.userData?.firstName,
-      secondName: authContext?.userData?.secondName,
-      userName: authContext?.userData?.username,
-      password: "",
-      confirmPassword: "",
-      image: "",
-    },
-
-    validate: {
-      firstName: (value) => (value ? null : "First Name is required"),
-      secondName: (value) => (value ? null : "Second Name is required"),
-      userName: (value) => (value ? null : "Username is required"),
-      password: (value) =>
-        value.length >= 6
-          ? null
-          : "Password must be at least 6 characters long",
-      confirmPassword: (value, values) =>
-        value === values.password ? null : "Passwords do not match",
-    },
-  });
-
-  const handleUpdateData = async (values: EditProfileFormType) => {
-    try {
-      const userData = {
-        uid: authContext?.userData?.uid,
-        email: authContext?.userData?.email,
-        firstName: values.firstName,
-        secondName: values.secondName,
-        password: values.password,
-        username: values.userName,
-        image: imageUrl,
-      };
-      const usersRef = doc(db, "users", authContext?.userData?.uid as string);
-      await updateDoc(usersRef, userData);
-      await updatePassword(
-        authContext?.userCredential as User,
-        userData.password
-      );
-      authContext?.setUserData(userData as UserDataType);
-      setSuccessMessage("Updated Successfully");
-      handleEdit();
-    } catch (error) {
-      console.log("Error", error);
-    }
   };
 
   return (
@@ -97,117 +40,43 @@ const Profile = () => {
           >
             {isEditing ? (
               <>
-                <form
-                  onSubmit={form.onSubmit(handleUpdateData)}
-                  style={{ width: "100%" }}
-                >
-                  <Flex gap="2rem" align="center">
-                    <Avatar
-                      radius="md"
-                      size="15rem"
-                      src={imageUrl}
-                      alt="it's me"
-                      color="#1D2F6F"
-                    />
-                    <Flex justify="center" direction="column" gap={15}>
-                      <FileButton
-                        onChange={setImage}
-                        accept="image/png,image/jpeg"
-                      >
-                        {(props) => (
-                          <Button
-                            variant="default"
-                            radius="xl"
-                            style={{ marginRight: "auto" }}
-                            {...props}
-                            leftSection={<IconPlus stroke={1.5} size="1rem" />}
-                          >
-                            Upload photo
-                          </Button>
-                        )}
-                      </FileButton>
-                      {image && (
-                        <Text size="sm" ta="center" mt="sm">
-                          Uploaded successfully
-                        </Text>
+                <Flex gap="2rem" direction="column" flex={1}>
+                  <Avatar
+                    radius="md"
+                    size="15rem"
+                    src={imageUrl}
+                    alt="it's me"
+                    color="#1D2F6F"
+                  />
+                  <Flex direction="column" gap={15} flex={1}>
+                    <FileButton
+                      onChange={setImage}
+                      accept="image/png,image/jpeg"
+                    >
+                      {(props) => (
+                        <Button
+                          variant="default"
+                          radius="xl"
+                          style={{ marginRight: "auto" }}
+                          {...props}
+                          leftSection={<IconPlus stroke={1.5} size="1rem" />}
+                        >
+                          Upload photo
+                        </Button>
                       )}
-                      <Text size="sm">
-                        Supported formats : jpeg or png. <br />
-                        Max file size : 500k
+                    </FileButton>
+                    {image && (
+                      <Text size="sm" ta="center" mt="sm">
+                        Uploaded successfully
                       </Text>
-                    </Flex>
+                    )}
+                    <Text size="sm">
+                      Supported formats : jpeg or png. <br />
+                      Max file size : 500k
+                    </Text>
                   </Flex>
-                  <Flex
-                    gap="1rem"
-                    direction="column"
-                    style={{
-                      width: "70%",
-                    }}
-                  >
-                    {" "}
-                    <Text c="red">{successMessage}</Text>
-                    <Flex justify="space-between" gap="1rem">
-                      <TextInput
-                        flex={1}
-                        label="First name"
-                        placeholder="Enter your first name"
-                        {...form.getInputProps("firstName")}
-                      />
-                      <TextInput
-                        flex={1}
-                        label="Second name"
-                        placeholder="Enter your second name"
-                        {...form.getInputProps("secondName")}
-                      />
-                    </Flex>
-                    <TextInput
-                      label="Username"
-                      placeholder="Enter username"
-                      {...form.getInputProps("userName")}
-                    />
-                    <TextInput
-                      label="Email"
-                      defaultValue={authContext?.userData?.email}
-                      disabled
-                    />
-                    <PasswordInput
-                      label="Password"
-                      visible={visible}
-                      onVisibilityChange={toggle}
-                      {...form.getInputProps("password")}
-                      placeholder="password"
-                    />
-                    <PasswordInput
-                      label="Confirm password"
-                      visible={visible}
-                      onVisibilityChange={toggle}
-                      placeholder="Confirm password"
-                      {...form.getInputProps("confirmPassword")}
-                    />
-                    <Group>
-                      <Button
-                        onClick={handleEdit}
-                        radius="xl"
-                        variant="default"
-                        color="#1D2F6F"
-                        flex={1}
-                        style={{ marginRight: "auto" }}
-                      >
-                        Cancel
-                      </Button>
-                      <Button
-                        type="submit"
-                        radius="xl"
-                        color="#1D2F6F"
-                        flex={1}
-                        style={{ marginRight: "auto" }}
-                        leftSection={<IconCheck stroke={1.5} size="1rem" />}
-                      >
-                        Save changes
-                      </Button>
-                    </Group>
-                  </Flex>
-                </form>
+                </Flex>
+                <UpdateUserForm user={authContext?.userData as UserDataType} />
               </>
             ) : (
               <>

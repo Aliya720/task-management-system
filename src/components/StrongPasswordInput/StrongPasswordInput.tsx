@@ -11,6 +11,7 @@ import {
 import { regex } from "../../constants/regex";
 import { CustomInputProps } from "./customInputProps.types";
 
+//display  password requirement indicator
 const PasswordRequirement = ({
   meets,
   label,
@@ -35,6 +36,7 @@ const PasswordRequirement = ({
   );
 };
 
+//password requirements
 const requirements = [
   { re: regex.Number, label: "Includes number" },
   { re: regex.LowerCase, label: "Includes lowercase letter" },
@@ -42,6 +44,7 @@ const requirements = [
   { re: regex.SpecialChar, label: "Includes special symbol" },
 ];
 
+// calculates a password strength score based on the length of the password and a set of requirements
 const getStrength = (password: string) => {
   let multiplier = password.length > 5 ? 0 : 1;
 
@@ -54,6 +57,7 @@ const getStrength = (password: string) => {
   return Math.max(100 - (100 / (requirements.length + 1)) * multiplier, 10);
 };
 
+// handle password input and display the strength requirements based on the entered value (exporting function)
 const StrongPasswordInput = ({ value, onChange }: CustomInputProps) => {
   const [popoverOpened, setPopoverOpened] = useState(false);
   const inputValue = value as string;

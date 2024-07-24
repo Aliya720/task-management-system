@@ -20,6 +20,7 @@ const SignIn = () => {
   const [message, setMessage] = useState("");
   const [isSuccessMessage, setIsSuccessMessage] = useState(false);
 
+  //Mantine form
   const form = useForm<SignInFormType>({
     initialValues: {
       email: "",
@@ -27,6 +28,7 @@ const SignIn = () => {
     },
   });
 
+  //submits email and password to firebase to check authentication
   const handleSubmit = async (values: SignInFormType) => {
     try {
       const userCredential = await signInWithEmailAndPassword(
@@ -45,6 +47,7 @@ const SignIn = () => {
       setMessage("Invalid user id and password");
     }
   };
+
   return (
     <Center style={{ height: "100vh", width: "100vw" }}>
       <Flex direction="column" gap="1rem" style={{ width: "20rem" }}>

@@ -5,5 +5,8 @@ export type SignUpFormType = {
     password: string,
     userName: string,
     confirmPassword: string,
+}
 
+export type NewUserFormProps = {
+    text: string
 }
