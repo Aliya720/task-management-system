@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate();
   const [userData, setUserData] = useState<UserDataType | null>(null);
   const [userCredential, setUserCredential] = useState<User | undefined>();
-  const [userList, setUserList] = useState<string[]>([]);
+  const [userList, setUserList] = useState<UserDataType[]>([]);
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
   const [taskList, setTaskList] = useState<TaskType[] | undefined>();
 
@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const userSnap = await getDoc(usersRef);
       if (userSnap.exists()) {
         setUserData(userSnap.data() as UserDataType);
-        navigate("/user");
+        navigate("/user/dashboard");
       }
     } catch (error) {
       console.error("Error fetching user:", error);
@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const usersSnapshot = await getDocs(usersCollection);
     const users = usersSnapshot.docs.map((doc) => ({
       ...doc.data(),
-    }));
+    })) as UserDataType[];
     setUserList(users);
   };
 

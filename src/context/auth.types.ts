@@ -20,7 +20,7 @@ export type AuthType = {
     signUp: (userData: UserDataType) => void;
     setUserData: React.Dispatch<React.SetStateAction<UserDataType | null>>
     userCredential: User | undefined
-    userList: string[]
+    userList: UserDataType[]
     isAdminLoggedIn: boolean
     setTaskList: React.Dispatch<React.SetStateAction<TaskType[] | undefined>>
     taskList: TaskType[] | undefined

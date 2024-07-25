@@ -1,6 +1,5 @@
 import {
   AppShell,
-  Modal,
   Button,
   Card,
   Flex,
@@ -14,13 +13,11 @@ import { NavLink } from "react-router-dom";
 import { UserDataType } from "../../context/auth.types";
 import { deleteDoc, doc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
-import { useDisclosure } from "@mantine/hooks";
 import { useState } from "react";
 import { modals } from "@mantine/modals";
 
 const AllUser = () => {
   const authContext = useAuthContext();
-  const [opened, { open, close }] = useDisclosure(false);
   const [selectedUser, setSelectedUser] = useState<UserDataType | null>(null);
 
   //Deleting user from firebase

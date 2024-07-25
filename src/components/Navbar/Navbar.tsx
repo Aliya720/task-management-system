@@ -9,12 +9,9 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import {
-  IconBellRinging,
   IconChecklist,
   IconLayoutDashboard,
-  IconLogout,
   IconSearch,
-  IconSettings,
   IconUser,
 } from "@tabler/icons-react";
 import NewTask from "../NewTask/NewTask";
@@ -83,12 +80,12 @@ const Navbar = () => {
               label="My Task"
               leftSection={<IconChecklist size="1rem" stroke={1.5} />}
             />
-            <NavLink
+            {/* <NavLink
               component={Link}
               to="/user/notification"
               label="Notification"
               leftSection={<IconBellRinging size="1rem" stroke={1.5} />}
-            />
+            /> */}
             {authContext?.isAdminLoggedIn ? (
               <>
                 <NavLink

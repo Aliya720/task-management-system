@@ -11,7 +11,7 @@ import {
   Input,
   Select,
 } from "@mantine/core";
-import { DateInput, DateTimePicker } from "@mantine/dates";
+import { DateTimePicker } from "@mantine/dates";
 import { useState } from "react";
 import {
   IconCalendar,
@@ -27,12 +27,14 @@ import { db } from "../../firebaseConfig";
 import { useAuthContext } from "../../context/AuthContext";
 import { useForm } from "@mantine/form";
 import { NewTaskFormType } from "./form.type";
+import { generateFibonacciSeries } from "../../utils/generateFibonacciSeries";
 
 const NewTask = () => {
   const [opened, { open, close }] = useDisclosure(false);
   const [dueDate, setDueDate] = useState(new Date());
   const [message, setMessage] = useState("");
   const authContext = useAuthContext();
+
   // For user name list
   const userNameList: string[] | undefined = authContext?.userList.map(
     (user) => {
@@ -49,23 +51,14 @@ const NewTask = () => {
     return filtered;
   };
 
-  // To update due date according to time stamp selected
-  const GeneralFibonacciSeries = (n: number): number[] => {
-    if (n <= 0) return [0];
-    if (n === 1) return [0, 1];
-
-    let series: number[] = [1, 2];
-    for (let i = 2; i <= n; i++) {
-      series = [...series, series[i - 1] + series[i - 2]];
-    }
-    return series;
-  };
-  const timeSlotList = GeneralFibonacciSeries(9).map((num, idx) => ({
-    value: num.toString(),
-    label: (idx + 1).toString(),
+  const timeSlotList = generateFibonacciSeries(9).map((num) => ({
+    value: `${num}`,
+    label: `${num}`,
   }));
 
+  // To update due date according to time stamp selected
   const updateDueDate = (time: number) => {
+    if (!time) return;
     const date = new Date();
     const extendedTime = 6 * time;
     const currentTime = date.getTime();
@@ -73,6 +66,7 @@ const NewTask = () => {
     setDueDate(newDueDate);
   };
 
+  //Mantine form
   const form = useForm<NewTaskFormType>({
     initialValues: {
       taskName: "",
@@ -88,6 +82,8 @@ const NewTask = () => {
       taskName: (value) => (value ? null : "TaskName can not be Empty"),
     },
   });
+
+  //Creates task in firebase
 
   const handleCreateTask = async (values: NewTaskFormType) => {
     try {
@@ -142,10 +138,7 @@ const NewTask = () => {
               <Select
                 placeholder="select time"
                 data={timeSlotList}
-                onChange={(value) => {
-                  const numericValue = parseInt(value, 10);
-                  updateDueDate(numericValue);
-                }}
+                onChange={(value) => updateDueDate(+value!)}
                 flex={1}
               />
             </Flex>

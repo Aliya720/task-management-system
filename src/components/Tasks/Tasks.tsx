@@ -31,7 +31,9 @@ const Tasks = () => {
       const tasks = taskSnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
-      }));
+      })) as TaskType[];
+      console.log("tasks", tasks);
+
       setTaskList(tasks);
       authContext?.setTaskList(tasks);
     } catch (error) {
