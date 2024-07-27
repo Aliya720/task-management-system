@@ -48,6 +48,16 @@ const SignIn = () => {
     }
   };
 
+  // if (!authContext?.userCredential) {
+  //   return (
+  //     <LoadingOverlay
+  //       zIndex={1000}
+  //       visible={visible}
+  //       overlayProps={{ radius: "sm", blur: 2 }}
+  //     />
+  //   );
+  // }
+
   return (
     <Center style={{ height: "100vh", width: "100vw" }}>
       <Flex direction="column" gap="1rem" style={{ width: "20rem" }}>

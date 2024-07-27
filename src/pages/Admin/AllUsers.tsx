@@ -13,7 +13,7 @@ import { NavLink } from "react-router-dom";
 import { UserDataType } from "../../context/auth.types";
 import { deleteDoc, doc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { modals } from "@mantine/modals";
 
 const AllUser = () => {
@@ -47,6 +47,7 @@ const AllUser = () => {
   };
 
   //rows of the table
+
   const rows = authContext?.userList.map((user) => (
     <Table.Tr key={user.firstName}>
       <Table.Td>{user.firstName}</Table.Td>
@@ -76,7 +77,7 @@ const AllUser = () => {
       </Table.Td>
     </Table.Tr>
   ));
-
+  useEffect(() => {}, [authContext?.userList]);
   return (
     <AppShell p="md">
       <AppShell.Main>

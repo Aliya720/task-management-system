@@ -15,13 +15,15 @@ export type UserDataType = {
 
 export type AuthType = {
     userData: UserDataType | null;
+    isAuthenticated: boolean
     signIn: (userData: User) => void;
     logOut: () => void;
     signUp: (userData: UserDataType) => void;
     setUserData: React.Dispatch<React.SetStateAction<UserDataType | null>>
-    userCredential: User | undefined
+    userCredential: User | null
     userList: UserDataType[]
     isAdminLoggedIn: boolean
+    isLoading: boolean
     setTaskList: React.Dispatch<React.SetStateAction<TaskType[] | undefined>>
     taskList: TaskType[] | undefined
 } 

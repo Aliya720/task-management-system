@@ -3,26 +3,28 @@ import {
   Burger,
   Group,
   Title,
-  TextInput,
   NavLink,
   Avatar,
+  Flex,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import {
   IconChecklist,
   IconLayoutDashboard,
-  IconSearch,
   IconUser,
 } from "@tabler/icons-react";
 import NewTask from "../NewTask/NewTask";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useAuthContext } from "../../context/AuthContext";
 import SettingMenu from "../SettingMenu/SettingMenu";
 import LogOutBtn from "../LogOutBtn/LogOutBtn";
+import SearchInput from "../SearchInput/SearchInput";
 
 const Navbar = () => {
   const [opened, { toggle }] = useDisclosure();
   const authContext = useAuthContext();
+  const location = useLocation();
+  const isActive = (path: string) => location.pathname === path;
 
   return (
     <AppShell
@@ -37,13 +39,14 @@ const Navbar = () => {
             <Title order={1} style={{ color: "#1D2F6F" }}>
               TMS
             </Title>
-            <TextInput
+            {/* <TextInput
               placeholder="Search"
               rightSection={<IconSearch size="1rem" stroke={1.5} />}
               visibleFrom="sm"
               style={{ width: "30rem" }}
               radius="xl"
-            />
+            /> */}
+            <SearchInput />
             <Group ml="xl" gap={20}>
               <NewTask />
 
@@ -59,52 +62,52 @@ const Navbar = () => {
         </Group>
       </AppShell.Header>
       <AppShell.Navbar p="md" h="100%">
-        <Group
+        <Flex
+          direction="column"
+          gap="1rem"
           style={{
-            flexDirection: "column",
             height: "90%",
-            justifyContent: "space-between",
-            alignContent: "flex-start",
           }}
         >
-          <Group style={{ flexDirection: "column" }}>
-            <NavLink
-              component={Link}
-              to="/user/dashboard"
-              label="Dashboard"
-              leftSection={<IconLayoutDashboard size="1rem" stroke={1.5} />}
-            />
-            <NavLink
-              component={Link}
-              to="/user/my-task"
-              label="My Task"
-              leftSection={<IconChecklist size="1rem" stroke={1.5} />}
-            />
-            {/* <NavLink
+          <NavLink
+            component={Link}
+            to="/user/dashboard"
+            label="Dashboard"
+            leftSection={<IconLayoutDashboard size="1rem" stroke={1.5} />}
+            active={isActive("/user/dashboard")}
+          />
+          <NavLink
+            component={Link}
+            to="/user/my-task"
+            label="My Task"
+            leftSection={<IconChecklist size="1rem" stroke={1.5} />}
+            active={isActive("/user/my-task")}
+          />
+          {/* <NavLink
               component={Link}
               to="/user/notification"
               label="Notification"
               leftSection={<IconBellRinging size="1rem" stroke={1.5} />}
             /> */}
-            {authContext?.isAdminLoggedIn ? (
-              <>
-                <NavLink
-                  component={Link}
-                  to="/admin/users"
-                  label="Users"
-                  leftSection={<IconUser size="1rem" stroke={1.5} />}
-                />
-              </>
-            ) : (
-              <></>
-            )}
-          </Group>
+          {authContext?.isAdminLoggedIn ? (
+            <>
+              <NavLink
+                component={Link}
+                to="/admin/users"
+                label="Users"
+                leftSection={<IconUser size="1rem" stroke={1.5} />}
+                active={isActive("/admin/users")}
+              />
+            </>
+          ) : (
+            <></>
+          )}
 
-          <Group style={{ flexDirection: "column" }}>
+          <Group style={{ marginTop: "auto" }}>
             <SettingMenu />
             <LogOutBtn />
           </Group>
-        </Group>
+        </Flex>
       </AppShell.Navbar>
     </AppShell>
   );

@@ -22,7 +22,7 @@ import {
   IconUser,
 } from "@tabler/icons-react";
 import "@mantine/dates/styles.css";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, Timestamp } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import { useAuthContext } from "../../context/AuthContext";
 import { useForm } from "@mantine/form";
@@ -89,11 +89,12 @@ const NewTask = () => {
     try {
       const task = {
         name: values.taskName,
-        dueDate: dueDate,
+        dueDate: Timestamp.fromDate(dueDate), // Convert dueDate to Firestore timestamp
         assignee: values.assignee,
         tags: values.tags,
         description: values.description,
         status: "in-progress",
+        // createdAt: serverTimestamp(), // Add creation timestamp here
       };
       const userId = authContext?.userCredential?.uid;
       const usersRef = doc(db, `users/${userId}/task`, values.taskName);

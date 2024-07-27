@@ -3,6 +3,15 @@ import Tasks from "../../components/Tasks/Tasks";
 import MyCalendar from "../../components/Calendar/Calendar";
 
 const Dashboard = () => {
+  // if (!authContext?.userCredential) {
+  //   return (
+  //     <LoadingOverlay
+  //       zIndex={1000}
+  //       visible={visible}
+  //       overlayProps={{ radius: "sm", blur: 2 }}
+  //     />
+  //   );
+  // }
   return (
     <AppShell p="md">
       <AppShell.Main>
@@ -30,7 +39,7 @@ const Dashboard = () => {
             shadow="sm"
             padding="sm"
             radius="md"
-            style={{ width: "30rem", height: "30rem", overflow: "auto" }}
+            style={{ width: "50rem", height: "30rem", overflow: "auto" }}
           >
             <Title order={3}>My tasks</Title>
             <Box style={{ width: "100%", height: "100%" }}>

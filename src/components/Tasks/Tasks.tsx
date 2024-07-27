@@ -9,11 +9,11 @@ import {
   Flex,
   Text,
   Title,
-  UnstyledButton,
 } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { TaskType } from "./TaskType";
 import { IconCheck } from "@tabler/icons-react";
+import { formatDueDate } from "../../utils/formatDueDate";
 
 const Tasks = () => {
   const [taskList, setTaskList] = useState<TaskType[] | undefined>();
@@ -32,8 +32,6 @@ const Tasks = () => {
         id: doc.id,
         ...doc.data(),
       })) as TaskType[];
-      console.log("tasks", tasks);
-
       setTaskList(tasks);
       authContext?.setTaskList(tasks);
     } catch (error) {
@@ -80,38 +78,42 @@ const Tasks = () => {
                     <Avatar
                       key={assigneeName}
                       color="initials"
-                      name={assigneeName}
+                      size="md"
+                      radius="xl"
+                      src=""
+                      alt={assigneeName}
                     >
-                      {assigneeName}
+                      {assigneeName
+                        .split(" ")
+                        .map((name) => name[0])
+                        .join("")}
                     </Avatar>
                   ))}
                 </AvatarGroup>
                 <Title order={4}>{task.name.toUpperCase()}</Title>{" "}
                 <Text size="xs" c="dimmed">
-                  Due: {task.dueDate}
+                  Due: {formatDueDate(task.dueDate)}
                 </Text>{" "}
                 <Badge
                   color={task.status === "completed" ? "#1d2f6f" : "#A02C41"}
                 >
                   {task.status}
                 </Badge>
-                <UnstyledButton onClick={() => UpdateTaskStatus(task.name)}>
+                <Text onClick={() => UpdateTaskStatus(task.name)}>
                   <IconCheck
                     style={{
                       visibility: IsHovered ? "visible" : "hidden",
                     }}
                   />
-                </UnstyledButton>
-                {isAdmin ? <UnstyledButton>Edit Task</UnstyledButton> : <></>}
+                </Text>
+                {isAdmin ? <Text>Edit Task</Text> : <></>}
               </Flex>
             </Accordion.Control>
             <Accordion.Panel>
               <Text size="sm">{task.description}</Text>
-              <Text>
-                {task.tags.map((tag) => (
-                  <>#{tag}</>
-                ))}
-              </Text>
+              {task.tags.map((tag) => (
+                <p key={tag}>#{tag}</p>
+              ))}
             </Accordion.Panel>
           </Accordion.Item>
         ))}
