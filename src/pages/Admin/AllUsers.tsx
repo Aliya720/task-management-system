@@ -22,14 +22,19 @@ const AllUser = () => {
 
   //Deleting user from firebase
   const handleDeleteUser = async () => {
-    const usersRef = doc(db, "users", selectedUser?.uid as string);
+    if (!selectedUser || !selectedUser.uid) {
+      console.error("Selected user is undefined or does not have a UID.");
+      return;
+    }
+    const usersRef = doc(db, "users", selectedUser.uid as string);
     await deleteDoc(usersRef);
     close();
+    console.log("deleted...", selectedUser);
   };
 
+  console.log(selectedUser);
   //modal to delete user
   const openDeleteModal = () => {
-    console.log("openDeleteModal called");
     modals.openConfirmModal({
       title: "Delete your profile",
       centered: true,
@@ -42,14 +47,14 @@ const AllUser = () => {
       labels: { confirm: "Delete account", cancel: "No don't delete it" },
       confirmProps: { color: "red" },
       onCancel: () => console.log("Cancel"),
-      onConfirm: () => handleDeleteUser(),
+      onConfirm: handleDeleteUser,
     });
   };
 
   //rows of the table
 
   const rows = authContext?.userList.map((user) => (
-    <Table.Tr key={user.firstName}>
+    <Table.Tr key={user.uid}>
       <Table.Td>{user.firstName}</Table.Td>
       <Table.Td>{user.secondName}</Table.Td>
       <Table.Td>{user.email}</Table.Td>
@@ -77,7 +82,8 @@ const AllUser = () => {
       </Table.Td>
     </Table.Tr>
   ));
-  useEffect(() => {}, [authContext?.userList]);
+
+  useEffect(() => {}, [selectedUser]);
   return (
     <AppShell p="md">
       <AppShell.Main>

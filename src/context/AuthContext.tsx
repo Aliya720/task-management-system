@@ -34,6 +34,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     })) as UserDataType[];
     setUserList(users);
   };
+  useEffect(() => {
+    fetchUsersList();
+  }, []);
 
   // updating state when admin is logged in
   useEffect(() => {
@@ -75,19 +78,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) {
       console.error("Error fetching user:", error);
     }
-    fetchUsersList();
+    // fetchUsersList();
   };
 
   //sign up function
   const signUp = (user: UserDataType) => {
     setUserData(user);
     navigate("/user/dashboard");
-    fetchUsersList();
+    // fetchUsersList();
   };
 
   //log Out
   const logOut = () => {
     console.log("logged out");
+    navigate("/sign-in");
     setUserData(null);
     signOut(firebaseAuth);
   };
