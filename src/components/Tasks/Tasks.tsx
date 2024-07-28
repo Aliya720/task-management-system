@@ -42,7 +42,7 @@ const Tasks = () => {
   //useEffect for updating task list every time new task added
   useEffect(() => {
     getTask();
-  }, [taskList]);
+  }, [userId]);
 
   // to make incomplete task above and complete at the bottom
   const sortedTasks = taskList?.sort((a, b) => {
