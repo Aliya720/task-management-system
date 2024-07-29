@@ -31,8 +31,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const usersSnapshot = await getDocs(usersCollection);
     const users = usersSnapshot.docs.map((doc) => ({
       ...doc.data(),
+      uid: doc.id,
     })) as UserDataType[];
     setUserList(users);
+    console.log("userList updated");
   };
   useEffect(() => {
     fetchUsersList();
@@ -78,14 +80,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) {
       console.error("Error fetching user:", error);
     }
-    // fetchUsersList();
   };
 
   //sign up function
   const signUp = (user: UserDataType) => {
     setUserData(user);
     navigate("/user/dashboard");
-    // fetchUsersList();
   };
 
   //log Out
@@ -108,6 +108,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUserData,
         userCredential,
         userList,
+        fetchUsersList,
         taskList,
         setTaskList,
         isLoading,

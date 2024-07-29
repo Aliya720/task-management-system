@@ -13,7 +13,7 @@ import { NavLink } from "react-router-dom";
 import { UserDataType } from "../../context/auth.types";
 import { deleteDoc, doc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { modals } from "@mantine/modals";
 
 const AllUser = () => {
@@ -28,6 +28,7 @@ const AllUser = () => {
     }
     const usersRef = doc(db, "users", selectedUser.uid as string);
     await deleteDoc(usersRef);
+    await authContext?.fetchUsersList();
     close();
     console.log("deleted...", selectedUser);
   };
@@ -83,7 +84,6 @@ const AllUser = () => {
     </Table.Tr>
   ));
 
-  useEffect(() => {}, [selectedUser]);
   return (
     <AppShell p="md">
       <AppShell.Main>

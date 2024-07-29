@@ -22,6 +22,7 @@ export type AuthType = {
     setUserData: React.Dispatch<React.SetStateAction<UserDataType | null>>
     userCredential: User | null
     userList: UserDataType[]
+    fetchUsersList: () => Promise<void>
     isAdminLoggedIn: boolean
     isLoading: boolean
     setTaskList: React.Dispatch<React.SetStateAction<TaskType[] | undefined>>

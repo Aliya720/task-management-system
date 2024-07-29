@@ -91,6 +91,7 @@ const UpdateUserForm = (props: UpdateUserProp) => {
         );
         authContext?.setUserData(userData as UserDataType);
       }
+      await authContext?.fetchUsersList();
       setSuccessMessage("Updated Successfully");
       handleEdit();
     } catch (error) {

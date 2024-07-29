@@ -46,7 +46,6 @@ const NewUserForm = (props: NewUserFormProps) => {
         values.email,
         values.password
       );
-      console.log();
       const user = userCredential.user;
       const userData = {
         email: values.email,
@@ -60,6 +59,7 @@ const NewUserForm = (props: NewUserFormProps) => {
         const usersRef = doc(db, "users", user.uid);
         await setDoc(usersRef, userData);
         authContext?.signUp(userData as UserDataType);
+        await authContext?.fetchUsersList();
       }
       setSuccessMessage("Account created successfully");
     } catch (error) {
